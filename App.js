@@ -17,7 +17,9 @@ import {
   StatusBar,
   Button,
   Alert,
-  Image,
+  TextInput,
+  Modal,
+  TouchableHighlight,
 } from 'react-native';
 
 import {Header, Colors} from 'react-native/Libraries/NewAppScreen';
@@ -25,6 +27,9 @@ import {Header, Colors} from 'react-native/Libraries/NewAppScreen';
 const App = () => {
   const [render, setRender] = useState(0);
   const [data, setData] = useState();
+  const [modalShow, setModalShow] = useState(false);
+  const [todo, setTodo] = useState();
+  console.log(data);
 
   const Separator = () => <View style={styles.separator} />;
 
@@ -39,7 +44,46 @@ const App = () => {
   return (
     <>
       <View style={styles.container}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalShow}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+          }}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={{margin: 10}}>Input todo</Text>
+              <TextInput
+                style={styles.inputText}
+                onChangeText={(text) => setTodo(text)}
+                value={todo}
+              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  margin: 20,
+                }}>
+                <Button
+                  onPress={() => {
+                    setModalShow(!modalShow);
+                    setTodo(null);
+                  }}
+                  style={styles.button}
+                  title="Cancel"
+                />
+                <Button
+                  onPress={() => Alert.alert(`Add ${todo}`)}
+                  style={styles.button}
+                  title="Add"
+                />
+              </View>
+            </View>
+          </View>
+        </Modal>
         <StatusBar barStyle="dark-content" />
+        <Text style={styles.textRender}>TODO App</Text>
+        <Button onPress={() => setModalShow(!modalShow)} title="Add Todo" />
         <SafeAreaView>
           <ScrollView
             contentInsetAdjustmentBehavior="automatic"
@@ -51,35 +95,17 @@ const App = () => {
             )}
             <View style={styles.body}>
               <View style={styles.sectionContainer}>
-                <Text style={styles.textRender}>Rendered {render} times</Text>
                 {data ? (
                   data.map((i) => (
                     <View style={styles.list}>
-                      <Image style={styles.image} source={{uri: i.avatar}} />
-                      <Text key={i.name}>{i.name}</Text>
+                      <Text key={i.name}>{i.todo}</Text>
+                      <Text>{i.detail}</Text>
                     </View>
                   ))
                 ) : (
                   <Text> </Text>
                 )}
               </View>
-              <Button
-                onPress={() => setRender((prev) => prev + 1)}
-                title="Add render"
-              />
-              <Separator />
-              <Button
-                onPress={() => {
-                  setRender(0);
-                  setData(null);
-                }}
-                title="remove render"
-              />
-              <Separator />
-              <Button
-                onPress={() => Alert.alert('Button Pressed')}
-                title="Btn"
-              />
             </View>
           </ScrollView>
         </SafeAreaView>
@@ -89,8 +115,20 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
+  button: {
+    marginLeft: 10,
+    marginRight: 10,
+  },
   container: {
     padding: 10,
+  },
+  inputText: {
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    width: 200,
+    height: 40,
+    margin: 10,
   },
   list: {
     width: '100%',
@@ -98,6 +136,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignContent: 'center',
     justifyContent: 'space-between',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    flexDirection: 'column',
+    alignContent: 'space-around',
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    height: 200,
+    width: 300,
+    padding: 7,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   image: {
     width: 100,
